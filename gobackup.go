@@ -17,7 +17,7 @@ func main() {
 	if len(os.Args) < 2 {
 		log.Fatal(errors.New("Please provide a file or directory to compress."))
 	}
-	basePath := os.Args[1]
+	basePath, _ := filepath.Abs(os.Args[1])
 	createTarballs(basePath)
 }
 
@@ -40,7 +40,7 @@ func createTarballs(pathToCheck string) {
 
 		for _, f := range files {
 			if f.IsDir() {
-				fmt.Println("compressing", file.Name())
+				fmt.Println("compressing", f.Name())
 
 				var b bytes.Buffer
 				gz := gzip.NewWriter(&b)
@@ -79,6 +79,7 @@ func statAndWriteHeader(tarWriter *tar.Writer, file os.FileInfo, curPath string)
 	if file.IsDir() {
 		pathToCheck = curPath
 	} else {
+		// absPath, _ := filepath.Abs(file.Name())
 		tmp, _ := os.Stat(curPath)
 		if !tmp.IsDir() {
 			pathToCheck = curPath
